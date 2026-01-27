@@ -93,9 +93,9 @@
         /* Center-Right Floating WhatsApp Button */
         .whatsapp-float {
             position: fixed;
-            top: 50%; /* Center mathematically */
+            top: 50%;
             right: 20px;
-            transform: translateY(-50%); /* Offset back to exact center */
+            transform: translateY(-50%);
             width: 55px;
             height: 55px;
             background-color: #25d366;
@@ -111,12 +111,46 @@
             text-decoration: none;
             transition: 0.3s;
         }
-        .whatsapp-float:hover { transform: translateY(-50%) scale(1.1); background-color: #20ba5a; }
+
+        /* NEW CHAT WIDGET STYLE */
+        .chat-widget-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10001;
+        }
+        #chatBox {
+            display: none; width: 280px; height: 380px; 
+            background: var(--bg-color); border-radius: 20px; 
+            box-shadow: 10px 10px 20px var(--shadow-dark); 
+            flex-direction: column; overflow: hidden; margin-bottom: 15px;
+        }
+        .chat-header { background: #31344b; color: white; padding: 12px; font-weight: bold; text-align: center; }
+        #member-msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.2); }
+        .msg-bubble { padding: 8px 12px; border-radius: 15px; font-size: 0.85rem; max-width: 85%; }
+        .msg-member { background: white; align-self: flex-start; box-shadow: 2px 2px 5px var(--shadow-dark); }
+        .msg-admin { background: #31344b; color: white; align-self: flex-end; }
+        .chat-input-row { padding: 10px; display: flex; gap: 8px; background: var(--bg-color); }
+        .chat-input-row input { flex: 1; padding: 10px; border-radius: 20px; border: none; box-shadow: inset 3px 3px 6px var(--shadow-dark); outline: none; }
+        .chat-send-btn { border: none; background: #25d366; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+        .chat-toggle-btn { width: 55px; height: 55px; border-radius: 50%; border: none; background: #31344b; color: white; font-size: 22px; cursor: pointer; box-shadow: 5px 5px 15px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
     <canvas id="snow-canvas"></canvas>
+
+    <div class="chat-widget-container">
+        <div id="chatBox">
+            <div class="chat-header">Admin Support</div>
+            <div id="member-msgs"></div>
+            <div class="chat-input-row">
+                <input type="text" id="mMsg" placeholder="Type message...">
+                <button class="chat-send-btn" onclick="sendMemberMsg()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button class="chat-toggle-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></button>
+    </div>
 
     <a href="https://wa.me/923402439417" class="whatsapp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
@@ -127,7 +161,6 @@
             <i class="fab fa-whatsapp" style="font-size: 3rem; color: #25d366;"></i>
             <h2 style="margin-top:10px;">Join Channel</h2>
             <p style="font-size: 0.9rem; margin-top:10px; color: #555;">Latest updates aur premium tools ke liye humara WhatsApp channel join karein!</p>
-            
             <a href="https://whatsapp.com/channel/0029Vb6Az6dFHWpzkZII9513" target="_blank" class="popup-btn">Join Now</a>
             <button class="close-now-btn" onclick="closePopup()">Close Now</button>
         </div>
@@ -171,7 +204,41 @@
             }, 1000);
             fetchTools();
             initSnow();
+            loadChat();
         };
+
+        function toggleChat() {
+            const box = document.getElementById('chatBox');
+            box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        // CHAT LOGIC
+        function sendMemberMsg() {
+            const input = document.getElementById('mMsg');
+            const text = input.value.trim();
+            if(!text) return;
+            db.collection('chats').add({
+                text: text,
+                sender: 'member',
+                time: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            input.value = '';
+        }
+
+        function loadChat() {
+            db.collection('chats').orderBy('time', 'asc').onSnapshot(snap => {
+                const display = document.getElementById('member-msgs');
+                display.innerHTML = '';
+                snap.forEach(doc => {
+                    const m = doc.data();
+                    const div = document.createElement('div');
+                    div.className = `msg-bubble ${m.sender === 'member' ? 'msg-member' : 'msg-admin'}`;
+                    div.innerText = m.text;
+                    display.appendChild(div);
+                });
+                display.scrollTop = display.scrollHeight;
+            });
+        }
 
         function closePopup() {
             const popup = document.getElementById('welcomePopup');
