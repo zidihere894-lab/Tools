@@ -25,7 +25,6 @@
             overflow-x: hidden;
         }
 
-        /* Login Overlay */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); z-index: 20000;
@@ -44,7 +43,6 @@
         .logo { font-family: 'Audiowide'; font-size: 2.2rem; color: var(--text-color); letter-spacing: 2px; }
         .subtitle { color: #666; font-size: 0.9rem; margin-top: 5px; }
 
-        /* Search Section */
         .search-container { max-width: 500px; margin: 20px auto; padding: 0 20px; }
         .search-input {
             width: 100%; padding: 15px 25px; border-radius: 50px; border: none;
@@ -53,7 +51,6 @@
             outline: none; color: var(--text-color); margin-bottom: 15px;
         }
 
-        /* Tools Grid */
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
 
@@ -70,7 +67,6 @@
         }
         .tool-icon { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Popup Logic */
         .popup-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); display: flex; justify-content: center;
@@ -103,7 +99,6 @@
             text-decoration: none; transition: 0.3s;
         }
 
-        /* CHAT WIDGET WITH UID & SEND OPTION */
         .chat-widget-container { position: fixed; bottom: 20px; left: 20px; z-index: 10001; }
         #chatBox {
             display: none; width: 280px; height: 420px; 
@@ -112,14 +107,13 @@
             flex-direction: column; overflow: hidden; margin-bottom: 15px;
         }
         .chat-header { background: #31344b; color: white; padding: 12px; font-weight: bold; text-align: center; position: relative; }
-        #user-uid-display { font-size: 0.6rem; display: block; color: #bbb; margin-top: 2px; }
+        #user-uid-display { font-size: 0.65rem; display: block; color: #00ffcc; margin-top: 2px; }
         
         #member-msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.1); }
         .msg-bubble { padding: 8px 12px; border-radius: 15px; font-size: 0.85rem; max-width: 85%; word-wrap: break-word; }
         .msg-member { background: white; align-self: flex-start; box-shadow: 2px 2px 5px var(--shadow-dark); }
         .msg-admin { background: #31344b; color: white; align-self: flex-end; }
         
-        /* New Send Button Above Input */
         .btn-send-above {
             width: 90%; margin: 5px auto; padding: 8px;
             background: #31344b; color: white; border: none;
@@ -157,12 +151,12 @@
         <div id="chatBox">
             <div class="chat-header">
                 Admin Support
-                <span id="user-uid-display">UID: Loading...</span>
+                <span id="user-uid-display">UID: Generating...</span>
             </div>
             <div id="member-msgs"></div>
             <div class="chat-input-row">
                 <button class="btn-send-above" onclick="sendMemberMsg()">SEND MESSAGE</button>
-                <input type="text" id="mMsg" placeholder="Type message..." onkeypress="handleKeyPress(event)">
+                <input type="text" id="mMsg" placeholder="Type message..." onkeypress="if(event.key==='Enter') sendMemberMsg()">
             </div>
         </div>
         <button class="chat-toggle-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></button>
@@ -174,7 +168,6 @@
         <div class="popup-box">
             <i class="fab fa-whatsapp" style="font-size: 3rem; color: #25d366;"></i>
             <h2 style="margin-top:10px;">Join Channel</h2>
-            <p style="font-size: 0.9rem; margin-top:10px; color: #555;">Latest updates aur premium tools ke liye join karein!</p>
             <a href="https://whatsapp.com/channel/0029Vb6Az6dFHWpzkZII9513" target="_blank" class="popup-btn">Join Now</a>
             <button class="close-now-btn" onclick="closePopup()">Close Now</button>
         </div>
@@ -210,22 +203,37 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
         let currentUser = null;
+        let numericUID = null;
 
         function googleLogin() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(e => alert(e.message));
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert(e.message));
         }
 
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
+                // Generate or retrieve 8-digit numeric UID
+                await getNumericUID(user.uid);
                 document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('user-uid-display').innerText = "UID: " + user.uid;
+                document.getElementById('user-uid-display').innerText = "Your ID: " + numericUID;
                 initSite();
             } else {
                 document.getElementById('login-overlay').style.display = 'flex';
             }
         });
+
+        // Function to create a permanent 8-digit ID linked to Google account
+        async function getNumericUID(firebaseUid) {
+            const userRef = db.collection('users').doc(firebaseUid);
+            const doc = await userRef.get();
+            if (doc.exists) {
+                numericUID = doc.data().shortId;
+            } else {
+                // Generate 8-digit random number
+                numericUID = Math.floor(10000000 + Math.random() * 90000000).toString();
+                await userRef.set({ shortId: numericUID, email: currentUser.email });
+            }
+        }
 
         function initSite() {
             fetchTools();
@@ -243,21 +251,14 @@
             box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        // Handle Keyboard "Enter" key
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                sendMemberMsg();
-            }
-        }
-
         function sendMemberMsg() {
             const input = document.getElementById('mMsg');
             const text = input.value.trim();
-            if(!text || !currentUser) return;
+            if(!text || !numericUID) return;
             db.collection('chats').add({
                 text: text,
                 sender: 'member',
-                uid: currentUser.uid,
+                uid: numericUID, // Using 8-digit numeric ID
                 userName: currentUser.displayName,
                 time: firebase.firestore.FieldValue.serverTimestamp()
             });
@@ -265,9 +266,9 @@
         }
 
         function loadChat() {
-            if(!currentUser) return;
+            if(!numericUID) return;
             db.collection('chats')
-                .where('uid', '==', currentUser.uid)
+                .where('uid', '==', numericUID)
                 .orderBy('time', 'asc')
                 .onSnapshot(snap => {
                     const display = document.getElementById('member-msgs');
@@ -331,4 +332,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
