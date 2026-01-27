@@ -32,12 +32,19 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
 
-        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        #snow-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
 
         header { padding: 40px 20px 10px; text-align: center; }
         .logo { font-family: 'Audiowide'; font-size: 2.2rem; color: var(--text-color); letter-spacing: 2px; }
         .subtitle { color: #666; font-size: 0.9rem; margin-top: 5px; }
 
+        /* Search Section */
         .search-container { max-width: 500px; margin: 20px auto; padding: 0 20px; }
         .search-input {
             width: 100%; padding: 15px 25px; border-radius: 50px; border: none;
@@ -46,8 +53,9 @@
             outline: none; color: var(--text-color); margin-bottom: 15px;
         }
 
+        /* Tools Grid */
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
 
         .tool-card {
             background: var(--bg-color); border-radius: 25px; padding: 20px;
@@ -56,31 +64,66 @@
             cursor: pointer; transition: 0.3s;
         }
 
-        .icon-box { width: 70px; height: 70px; background: #fff; border-radius: 18px; box-shadow: 4px 4px 8px var(--shadow-dark); overflow: hidden; }
+        .icon-box {
+            width: 70px; height: 70px; background: #fff; border-radius: 18px;
+            box-shadow: 4px 4px 8px var(--shadow-dark); overflow: hidden;
+        }
         .tool-icon { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Popup */
-        .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 10000; visibility: hidden; opacity: 0; transition: 0.3s; }
-        .popup-box { background: var(--bg-color); padding: 30px; border-radius: 30px; text-align: center; max-width: 350px; width: 90%; box-shadow: 10px 10px 20px rgba(0,0,0,0.3); position: relative; }
-        .popup-btn { display: block; width: 100%; padding: 12px; background: #25d366; color: #fff; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 15px; box-shadow: 0 5px 15px rgba(37,211,102,0.4); }
-        .close-now-btn { display: block; width: 100%; padding: 12px; background: var(--bg-color); border: none; border-radius: 50px; font-weight: bold; margin-top: 10px; cursor: pointer; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); }
+        /* Popup Logic */
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: flex; justify-content: center;
+            align-items: center; z-index: 10000; visibility: hidden; opacity: 0; transition: 0.3s;
+        }
+        .popup-box {
+            background: var(--bg-color); padding: 30px; border-radius: 30px;
+            text-align: center; max-width: 350px; width: 90%;
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .popup-btn {
+            display: block; width: 100%; padding: 12px; background: #25d366;
+            color: #fff; text-decoration: none; border-radius: 50px;
+            font-weight: bold; margin-top: 15px; box-shadow: 0 5px 15px rgba(37,211,102,0.4);
+        }
+        .close-now-btn {
+            display: block; width: 100%; padding: 12px; background: var(--bg-color);
+            color: var(--text-color); border: none; border-radius: 50px;
+            font-weight: bold; margin-top: 10px; cursor: pointer;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+        }
 
-        .whatsapp-float { position: fixed; top: 50%; right: 20px; transform: translateY(-50%); width: 55px; height: 55px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 28px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1001; display: flex; justify-content: center; align-items: center; text-decoration: none; }
+        .whatsapp-float {
+            position: fixed; top: 50%; right: 20px; transform: translateY(-50%);
+            width: 55px; height: 55px; background-color: #25d366; color: #FFF;
+            border-radius: 50px; text-align: center; font-size: 28px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1001;
+            display: flex; justify-content: center; align-items: center;
+            text-decoration: none; transition: 0.3s;
+        }
 
-        /* CHAT WIDGET */
+        /* FIXED CHAT WIDGET */
         .chat-widget-container { position: fixed; bottom: 20px; left: 20px; z-index: 10001; }
-        #chatBox { display: none; width: 280px; height: 380px; background: var(--bg-color); border-radius: 20px; box-shadow: 10px 10px 20px var(--shadow-dark); flex-direction: column; overflow: hidden; margin-bottom: 15px; }
+        #chatBox {
+            display: none; width: 280px; height: 380px; 
+            background: var(--bg-color); border-radius: 25px; 
+            box-shadow: 10px 10px 20px var(--shadow-dark); 
+            flex-direction: column; overflow: hidden; margin-bottom: 15px;
+        }
         .chat-header { background: #31344b; color: white; padding: 12px; font-weight: bold; text-align: center; }
-        #member-msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.2); }
+        #member-msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.1); }
         .msg-bubble { padding: 8px 12px; border-radius: 15px; font-size: 0.85rem; max-width: 85%; word-wrap: break-word; }
         .msg-member { background: white; align-self: flex-start; box-shadow: 2px 2px 5px var(--shadow-dark); }
         .msg-admin { background: #31344b; color: white; align-self: flex-end; }
-        .chat-input-row { padding: 10px; display: flex; gap: 8px; background: var(--bg-color); }
-        .chat-input-row input { flex: 1; padding: 10px; border-radius: 20px; border: none; box-shadow: inset 3px 3px 6px var(--shadow-dark); outline: none; }
-        .chat-send-btn { border: none; background: #25d366; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        
+        /* Fixed Input and Send Button Row */
+        .chat-input-row { padding: 10px; display: flex; align-items: center; gap: 8px; background: var(--bg-color); border-top: 1px solid var(--shadow-dark); }
+        .chat-input-row input { flex: 1; padding: 10px 15px; border-radius: 20px; border: none; box-shadow: inset 3px 3px 6px var(--shadow-dark); outline: none; background: var(--bg-color); color: var(--text-color); }
+        .chat-send-btn { border: none; background: #31344b; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        
         .chat-toggle-btn { width: 55px; height: 55px; border-radius: 50%; border: none; background: #31344b; color: white; font-size: 22px; cursor: pointer; box-shadow: 5px 5px 15px rgba(0,0,0,0.2); }
 
-        /* Login Button Style */
         .google-btn {
             background: white; color: #444; padding: 12px 24px; border-radius: 50px;
             font-weight: 600; display: flex; align-items: center; gap: 10px;
@@ -93,10 +136,10 @@
 
     <div id="login-overlay">
         <h1 class="logo">ZIDDI HACKS</h1>
-        <p style="color:#666; margin-bottom: 10px;">Login to access the toolkit</p>
+        <p style="color:#666; margin-bottom: 10px;">Continue with Google to access</p>
         <button class="google-btn" onclick="googleLogin()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20">
-            Continue with Google
+            Login with Google
         </button>
     </div>
 
@@ -108,7 +151,9 @@
             <div id="member-msgs"></div>
             <div class="chat-input-row">
                 <input type="text" id="mMsg" placeholder="Type message...">
-                <button class="chat-send-btn" onclick="sendMemberMsg()"><i class="fas fa-paper-plane"></i></button>
+                <button class="chat-send-btn" onclick="sendMemberMsg()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
         <button class="chat-toggle-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></button>
@@ -120,7 +165,7 @@
         <div class="popup-box">
             <i class="fab fa-whatsapp" style="font-size: 3rem; color: #25d366;"></i>
             <h2 style="margin-top:10px;">Join Channel</h2>
-            <p style="font-size: 0.9rem; margin-top:10px; color: #555;">Latest updates aur premium tools ke liye humara WhatsApp channel join karein!</p>
+            <p style="font-size: 0.9rem; margin-top:10px; color: #555;">Latest updates aur premium tools ke liye join karein!</p>
             <a href="https://whatsapp.com/channel/0029Vb6Az6dFHWpzkZII9513" target="_blank" class="popup-btn">Join Now</a>
             <button class="close-now-btn" onclick="closePopup()">Close Now</button>
         </div>
@@ -157,7 +202,6 @@
         const auth = firebase.auth();
         let currentUser = null;
 
-        // AUTH LOGIC
         function googleLogin() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).catch(e => alert(e.message));
@@ -178,8 +222,9 @@
             initSnow();
             loadChat();
             setTimeout(() => {
-                document.getElementById('welcomePopup').style.visibility = 'visible';
-                document.getElementById('welcomePopup').style.opacity = '1';
+                const popup = document.getElementById('welcomePopup');
+                popup.style.visibility = 'visible';
+                popup.style.opacity = '1';
             }, 1000);
         }
 
@@ -188,7 +233,6 @@
             box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        // CHAT LOGIC (PRIVATE)
         function sendMemberMsg() {
             const input = document.getElementById('mMsg');
             const text = input.value.trim();
@@ -205,7 +249,6 @@
 
         function loadChat() {
             if(!currentUser) return;
-            // Only show messages where sender is this user or admin reply to this user
             db.collection('chats')
                 .where('uid', '==', currentUser.uid)
                 .orderBy('time', 'asc')
@@ -238,7 +281,7 @@
                     const card = document.createElement('div');
                     card.className = 'tool-card';
                     card.onclick = () => window.open(tool.url, '_blank');
-                    card.innerHTML = `<div class="icon-box"><img src="${tool.icon || 'https://via.placeholder.com/70'}" class="tool-icon"></div><div style="flex:1"><div style="font-weight:700;">${tool.name}</div><div style="font-size:0.75rem; color:#888;">${tool.category}</div></div>`;
+                    card.innerHTML = `<div class="icon-box"><img src="${tool.icon}" class="tool-icon"></div><div style="flex:1"><div style="font-weight:700;">${tool.name}</div><div style="font-size:0.75rem; color:#888;">${tool.category}</div></div>`;
                     display.appendChild(card);
                 });
             });
