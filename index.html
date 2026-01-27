@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZIDDI HACKS | Premium Edition</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #d1d9e6;
+            --text-color: #31344b;
+            --shadow-light: #ffffff;
+            --shadow-dark: #b8b9be;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Snowfall Canvas */
+        #snow-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        header { padding: 40px 20px 10px; text-align: center; }
+        .logo { font-family: 'Audiowide'; font-size: 2.2rem; color: var(--text-color); letter-spacing: 2px; }
+        .subtitle { color: #666; font-size: 0.9rem; margin-top: 5px; }
+
+        /* Search Section */
+        .search-container { max-width: 500px; margin: 20px auto; padding: 0 20px; }
+        .search-input {
+            width: 100%; padding: 15px 25px; border-radius: 50px; border: none;
+            background: var(--bg-color);
+            box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+            outline: none; color: var(--text-color); margin-bottom: 15px;
+        }
+
+        /* Tools Grid */
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+
+        .tool-card {
+            background: var(--bg-color); border-radius: 25px; padding: 20px;
+            display: flex; align-items: center; gap: 15px;
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+            cursor: pointer; transition: 0.3s;
+        }
+
+        .tool-card:active { box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); }
+
+        .icon-box {
+            width: 70px; height: 70px; background: #fff; border-radius: 18px;
+            box-shadow: 4px 4px 8px var(--shadow-dark); overflow: hidden;
+        }
+        .tool-icon { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Popup Logic */
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: flex; justify-content: center;
+            align-items: center; z-index: 10000; visibility: hidden; opacity: 0; transition: 0.3s;
+        }
+        .popup-box {
+            background: var(--bg-color); padding: 30px; border-radius: 30px;
+            text-align: center; max-width: 350px; width: 90%;
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .popup-btn {
+            display: block; width: 100%; padding: 12px; background: #25d366;
+            color: #fff; text-decoration: none; border-radius: 50px;
+            font-weight: bold; margin-top: 15px; box-shadow: 0 5px 15px rgba(37,211,102,0.4);
+        }
+        .close-now-btn {
+            display: block; width: 100%; padding: 12px; background: var(--bg-color);
+            color: var(--text-color); border: none; border-radius: 50px;
+            font-weight: bold; margin-top: 10px; cursor: pointer;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+        }
+
+        /* Center-Right Floating WhatsApp Button */
+        .whatsapp-float {
+            position: fixed;
+            top: 50%; /* Center mathematically */
+            right: 20px;
+            transform: translateY(-50%); /* Offset back to exact center */
+            width: 55px;
+            height: 55px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 28px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            z-index: 1001;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .whatsapp-float:hover { transform: translateY(-50%) scale(1.1); background-color: #20ba5a; }
+    </style>
+</head>
+<body>
+
+    <canvas id="snow-canvas"></canvas>
+
+    <a href="https://wa.me/923402439417" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div id="welcomePopup" class="popup-overlay">
+        <div class="popup-box">
+            <i class="fab fa-whatsapp" style="font-size: 3rem; color: #25d366;"></i>
+            <h2 style="margin-top:10px;">Join Channel</h2>
+            <p style="font-size: 0.9rem; margin-top:10px; color: #555;">Latest updates aur premium tools ke liye humara WhatsApp channel join karein!</p>
+            
+            <a href="https://whatsapp.com/channel/0029Vb6Az6dFHWpzkZII9513" target="_blank" class="popup-btn">Join Now</a>
+            <button class="close-now-btn" onclick="closePopup()">Close Now</button>
+        </div>
+    </div>
+
+    <header>
+        <h1 class="logo">ZIDDI HACKS</h1>
+        <p class="subtitle">Premium Neumorphic Toolkit</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="toolSearch" class="search-input" onkeyup="searchTools()" placeholder="Search tools...">
+    </div>
+
+    <div class="container">
+        <div id="tools-display" class="tools-grid">
+            <p style="text-align: center; grid-column: 1/-1;">Connecting to secure server...</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFy28nNtxhkjfpOd0aCfYkjHUwErh1WVQ",
+            authDomain: "movie-1e6fc.firebaseapp.com",
+            projectId: "movie-1e6fc",
+            storageBucket: "movie-1e6fc.firebasestorage.app",
+            messagingSenderId: "371616954594",
+            appId: "1:371616954594:web:977d88ec7570df351246bb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.onload = () => {
+            setTimeout(() => {
+                const popup = document.getElementById('welcomePopup');
+                popup.style.visibility = 'visible';
+                popup.style.opacity = '1';
+            }, 1000);
+            fetchTools();
+            initSnow();
+        };
+
+        function closePopup() {
+            const popup = document.getElementById('welcomePopup');
+            popup.style.opacity = '0';
+            setTimeout(() => { popup.style.visibility = 'hidden'; }, 300);
+        }
+
+        function fetchTools() {
+            db.collection('tools').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+                const display = document.getElementById('tools-display');
+                display.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const tool = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'tool-card';
+                    card.onclick = () => window.open(tool.url, '_blank');
+                    card.innerHTML = `
+                        <div class="icon-box">
+                            <img src="${tool.icon || 'https://via.placeholder.com/70'}" class="tool-icon">
+                        </div>
+                        <div style="flex:1">
+                            <div style="font-weight:700;">${tool.name}</div>
+                            <div style="font-size:0.75rem; color:#888;">${tool.category}</div>
+                        </div>
+                    `;
+                    display.appendChild(card);
+                });
+            });
+        }
+
+        function initSnow() {
+            const canvas = document.getElementById('snow-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 4 + 1, d: Math.random() * 1 });
+            }
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+                ctx.beginPath();
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    ctx.moveTo(p.x, p.y);
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+                }
+                ctx.fill();
+                update();
+            }
+            function update() {
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.y += Math.cos(p.d) + 1 + p.r / 2;
+                    if (p.y > canvas.height) { particles[i] = { x: Math.random() * canvas.width, y: -10, r: p.r, d: p.d }; }
+                }
+            }
+            setInterval(draw, 33);
+        }
+
+        function searchTools() {
+            let filter = document.getElementById('toolSearch').value.toUpperCase();
+            let cards = document.getElementsByClassName('tool-card');
+            for (let i = 0; i < cards.length; i++) {
+                let name = cards[i].innerText;
+                cards[i].style.display = name.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
