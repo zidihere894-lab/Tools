@@ -15,7 +15,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s, color 0.3s; }
         body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; overflow-x: hidden; }
 
-        /* Top Bar Stats */
         .top-stats { display: flex; justify-content: space-around; padding: 10px; background: var(--bg-color); box-shadow: 0 4px 10px var(--shadow-dark); font-size: 0.75rem; font-weight: bold; position: sticky; top: 0; z-index: 9000; }
         .stat-item i { color: var(--accent); margin-right: 5px; }
 
@@ -27,7 +26,6 @@
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         
-        /* Action Buttons Area */
         .action-area { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 25px; }
         .btn-action { padding: 10px 20px; border-radius: 50px; border: none; background: var(--bg-color); color: var(--text-color); font-size: 0.85rem; font-weight: 600; box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; }
         .btn-action:active { box-shadow: inset 3px 3px 6px var(--shadow-dark); }
@@ -36,7 +34,6 @@
         .tool-card { background: var(--bg-color); border-radius: 20px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light); cursor: pointer; }
         .tool-card img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; }
 
-        /* CHAT BOX STYLES */
         .chat-widget-container { position: fixed; bottom: 20px; left: 20px; z-index: 10001; }
         #chatBox { display: none; width: 300px; height: 400px; background: var(--bg-color); border-radius: 20px; box-shadow: 10px 10px 20px var(--shadow-dark); flex-direction: column; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--shadow-dark); }
         .chat-header { background: #31344b; color: white; padding: 12px; text-align: center; font-size: 0.9rem; }
@@ -52,7 +49,6 @@
         .google-btn { background: white; padding: 12px 20px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; box-shadow: 5px 5px 10px var(--shadow-dark); display: flex; align-items: center; gap: 10px; color: #333; }
         .whatsapp-login { color: var(--text-color); font-size: 0.8rem; text-decoration: none; font-weight: bold; }
 
-        /* POPUP & OVERLAYS */
         .ziddi-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 30000; display: none; justify-content: center; align-items: center; padding: 20px; }
         .popup-content { background: var(--bg-color); padding: 30px; border-radius: 25px; box-shadow: 10px 10px 20px #000; text-align: center; max-width: 400px; width: 100%; }
         .popup-btn { margin-top: 20px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; width: 100%; }
@@ -139,7 +135,6 @@
                 <i class="fas fa-adjust"></i> Toggle Dark Theme
             </button>
         </div>
-
         <div id="tools-display" class="tools-grid"></div>
     </div>
 
@@ -163,12 +158,8 @@
         let numericUID = null;
         let correctPass = "";
 
-        // Dark Theme Toggle
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-        }
+        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
 
-        // --- VIEWS & ONLINE MOCKUP ---
         function updateStats() {
             document.getElementById('online-count').innerText = Math.floor(Math.random() * 20) + 5;
             let views = localStorage.getItem('site_views') || 1050;
@@ -178,16 +169,13 @@
         }
         updateStats();
 
-        // --- REMOTE CONFIG ---
         db.collection("site_settings").onSnapshot(snap => {
             snap.forEach(doc => {
                 const data = doc.data();
                 if(doc.id === 'security' && data.passEnabled === 'on') {
                     correctPass = data.password;
                     document.getElementById('site-lock').style.display = 'flex';
-                } else if(doc.id === 'security') {
-                    document.getElementById('site-lock').style.display = 'none';
-                }
+                } else if(doc.id === 'security') { document.getElementById('site-lock').style.display = 'none'; }
                 if(doc.id === 'popup' && data.popStatus === 'show') {
                     document.getElementById('pop-msg-text').innerText = data.popMsg;
                     document.getElementById('pop-close-btn').innerText = data.popBtn || "OK";
@@ -210,9 +198,7 @@
             else alert("Wrong Password!");
         }
 
-        function googleLogin() {
-            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-        }
+        function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -267,11 +253,15 @@
         }
 
         function loadTools() {
-            db.collection('tools').orderBy('createdAt', 'desc').onSnapshot(snap => {
+            // Sort by 'order' ascending for main site
+            db.collection('tools').onSnapshot(snap => {
+                let tools = [];
+                snap.forEach(doc => tools.push({id: doc.id, ...doc.data()}));
+                tools.sort((a, b) => (a.order ?? 99999) - (b.order ?? 99999));
+                
                 const grid = document.getElementById('tools-display');
                 grid.innerHTML = '';
-                snap.forEach(doc => {
-                    const t = doc.data();
+                tools.forEach(t => {
                     grid.innerHTML += `<div class="tool-card" onclick="window.open('${t.url}', '_blank')"><img src="${t.icon}"><b>${t.name}</b></div>`;
                 });
             });
