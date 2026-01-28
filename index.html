@@ -13,6 +13,11 @@
         .dark-mode { --bg-color: #1a1b26; --text-color: #cfcfff; --shadow-light: #24283b; --shadow-dark: #10101a; --accent: #7aa2f7; }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s, color 0.3s; }
+        
+        /* Protection for text selection */
+        * { -webkit-user-select: none !important; -moz-user-select: none !important; -ms-user-select: none !important; user-select: none !important; }
+        input, textarea { user-select: text !important; }
+
         body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; overflow-x: hidden; }
 
         .top-stats { display: flex; justify-content: space-around; padding: 10px; background: var(--bg-color); box-shadow: 0 4px 10px var(--shadow-dark); font-size: 0.75rem; font-weight: bold; position: sticky; top: 0; z-index: 9000; }
@@ -57,7 +62,7 @@
         #remote-float-btn { position: fixed; z-index: 9998; padding: 12px 25px; border-radius: 50px; color: white; text-decoration: none; font-weight: bold; font-size: 0.9rem; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); display: none; align-items: center; gap: 8px; }
     </style>
 </head>
-<body class="">
+<body oncontextmenu="return false;">
 
     <div class="top-stats">
         <div class="stat-item"><i class="fas fa-circle" style="font-size:8px; color:#2ecc71;"></i> Online: <span id="online-count">1</span></div>
@@ -143,6 +148,28 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <script>
+        // --- SECURITY SHIELD START ---
+        (function() {
+            // Block Shortcuts
+            document.onkeydown = function(e) {
+                if (e.keyCode == 123 || 
+                    (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
+                    (e.ctrlKey && e.keyCode == 85)) {
+                    return false;
+                }
+            };
+            // Debugger Loop to freeze inspect element
+            setInterval(function() {
+                const startTime = new Date().getTime();
+                debugger;
+                const endTime = new Date().getTime();
+                if (endTime - startTime > 100) {
+                    window.location.reload();
+                }
+            }, 1000);
+        })();
+        // --- SECURITY SHIELD END ---
+
         const firebaseConfig = {
             apiKey: "AIzaSyCFy28nNtxhkjfpOd0aCfYkjHUwErh1WVQ",
             authDomain: "movie-1e6fc.firebaseapp.com",
@@ -253,7 +280,6 @@
         }
 
         function loadTools() {
-            // Sort by 'order' ascending for main site
             db.collection('tools').onSnapshot(snap => {
                 let tools = [];
                 snap.forEach(doc => tools.push({id: doc.id, ...doc.data()}));
