@@ -9,36 +9,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --bg-color: #d1d9e6; --text-color: #31344b; --shadow-light: #ffffff; --shadow-dark: #b8b9be; }
+        :root { --bg-color: #d1d9e6; --text-color: #31344b; --shadow-light: #ffffff; --shadow-dark: #b8b9be; --accent: #6c5ce7; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; overflow-x: hidden; }
 
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
         
-        header { padding: 40px 20px 10px; text-align: center; position: relative; }
+        header { padding: 40px 20px 10px; text-align: center; }
         .logo { font-family: 'Audiowide'; font-size: 2.2rem; color: var(--text-color); letter-spacing: 2px; }
-
-        /* NEW BUTTON STYLE */
-        .create-toolkit-btn { 
-            position: absolute; 
-            top: 20px; 
-            right: 20px; 
-            background: #31344b; 
-            color: white; 
-            padding: 10px 18px; 
-            border-radius: 50px; 
-            text-decoration: none; 
-            font-size: 0.75rem; 
-            font-weight: 600; 
-            box-shadow: 5px 5px 10px var(--shadow-dark);
-            transition: 0.3s;
-            z-index: 10005;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .create-toolkit-btn:hover { transform: scale(1.05); background: #6c5ce7; }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
@@ -60,15 +39,47 @@
 
         .google-btn { background: white; padding: 12px 20px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; box-shadow: 5px 5px 10px var(--shadow-dark); display: flex; align-items: center; gap: 10px; }
 
-        /* Mobile Adjustments */
-        @media (max-width: 500px) {
-            .create-toolkit-btn { top: 10px; right: 10px; padding: 8px 12px; font-size: 0.65rem; }
-        }
+        /* REMOTE POPUP STYLE */
+        .ziddi-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 30000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .popup-content { background: var(--bg-color); padding: 30px; border-radius: 25px; box-shadow: 10px 10px 20px #000; text-align: center; max-width: 400px; width: 100%; }
+        .popup-btn { margin-top: 20px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; width: 100%; }
+
+        /* FLOATING BUTTON */
+        #remote-float-btn { position: fixed; z-index: 9998; padding: 12px 25px; border-radius: 50px; color: white; text-decoration: none; font-weight: bold; font-size: 0.9rem; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); display: none; align-items: center; gap: 8px; }
     </style>
 </head>
 <body>
 
     <audio id="msgSound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
+
+    <div id="site-lock" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-color); z-index:40000; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px;">
+        <i class="fas fa-lock fa-3x" style="color:var(--accent); margin-bottom:20px;"></i>
+        <h2>Site Locked</h2>
+        <p>Enter password to access tools</p>
+        <input type="text" id="pass-input" placeholder="Enter Password" style="max-width:300px; margin:20px 0; padding:12px; border-radius:10px; border:none; box-shadow:inset 4px 4px 8px var(--shadow-dark);">
+        <button class="google-btn" onclick="checkSitePass()" style="background:var(--accent); color:white;">UNLOCK NOW</button>
+    </div>
+
+    <div id="wa-popup" class="ziddi-popup" style="display: flex;">
+        <div class="popup-content">
+            <i class="fab fa-whatsapp fa-3x" style="color:#25d366; margin-bottom:15px;"></i>
+            <h3>Join Our Channel</h3>
+            <p>Sare updates aur hacks ke liye hamara WhatsApp channel abhi join karein!</p>
+            <button class="popup-btn" onclick="window.open('https://whatsapp.com/channel/0029Vb6Az6dFHWpzkZII9513'); document.getElementById('wa-popup').style.display='none'">JOIN CHANNEL</button>
+            <p onclick="document.getElementById('wa-popup').style.display='none'" style="margin-top:15px; font-size:0.8rem; cursor:pointer; color:#777;">Close Now</p>
+        </div>
+    </div>
+
+    <div id="admin-popup" class="ziddi-popup">
+        <div class="popup-content">
+            <i class="fas fa-bullhorn fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
+            <h3 id="pop-title">Notification</h3>
+            <p id="pop-msg-text"></p>
+            <button class="popup-btn" id="pop-close-btn" onclick="document.getElementById('admin-popup').style.display='none'">OK</button>
+        </div>
+    </div>
+
+    <a id="remote-float-btn" href="#" target="_blank"><i class="fas fa-link"></i> <span id="float-btn-text">Link</span></a>
 
     <div id="login-overlay">
         <h1 class="logo">ZIDDI HACKS</h1>
@@ -95,10 +106,6 @@
     </div>
 
     <header>
-        <a href="https://ziddi-toolkit-maker.vercel.app" target="_blank" class="create-toolkit-btn">
-            <i class="fas fa-magic"></i> Create Your Toolkit
-        </a>
-        
         <h1 class="logo">ZIDDI HACKS</h1>
         <p style="font-size:0.8rem; color:#666;">8-Digit Premium System</p>
     </header>
@@ -125,6 +132,45 @@
         const auth = firebase.auth();
         let currentUser = null;
         let numericUID = null;
+        let correctPass = "";
+
+        // --- REMOTE CONFIG LISTENER ---
+        db.collection("site_settings").onSnapshot(snap => {
+            snap.forEach(doc => {
+                const data = doc.data();
+                if(doc.id === 'security') {
+                    if(data.passEnabled === 'on') {
+                        correctPass = data.password;
+                        document.getElementById('site-lock').style.display = 'flex';
+                    } else {
+                        document.getElementById('site-lock').style.display = 'none';
+                    }
+                }
+                if(doc.id === 'popup') {
+                    if(data.popStatus === 'show') {
+                        document.getElementById('pop-msg-text').innerText = data.popMsg;
+                        document.getElementById('pop-close-btn').innerText = data.popBtn || "OK";
+                        document.getElementById('admin-popup').style.display = 'flex';
+                    }
+                }
+                if(doc.id === 'button') {
+                    const fBtn = document.getElementById('remote-float-btn');
+                    fBtn.style.display = 'flex';
+                    fBtn.style.backgroundColor = data.btnColor;
+                    fBtn.href = data.btnLink;
+                    document.getElementById('float-btn-text').innerText = data.btnText;
+                    if(data.btnPos === 'bottom-left') { fBtn.style.bottom = "90px"; fBtn.style.left = "20px"; fBtn.style.right = "auto"; }
+                    else { fBtn.style.bottom = "20px"; fBtn.style.right = "20px"; fBtn.style.left = "auto"; }
+                }
+            });
+        });
+
+        function checkSitePass() {
+            const input = document.getElementById('pass-input').value;
+            if(input === correctPass) {
+                document.getElementById('site-lock').style.display = 'none';
+            } else { alert("Wrong Password!"); }
+        }
 
         function googleLogin() {
             auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
@@ -134,6 +180,15 @@
             if (user) {
                 currentUser = user;
                 await getNumericUID(user.uid);
+                
+                // BLOCK CHECK
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if(userDoc.exists && userDoc.data().isBlocked) {
+                    alert("Your ID is Blocked!");
+                    auth.signOut();
+                    return;
+                }
+
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('user-uid-display').innerText = "ID: " + numericUID;
                 loadTools();
@@ -181,9 +236,7 @@
                     display.innerHTML = '';
                     let msgs = [];
                     snap.forEach(doc => msgs.push(doc.data()));
-                    
                     msgs.sort((a, b) => (a.time?.seconds || 0) - (b.time?.seconds || 0));
-
                     msgs.forEach(m => {
                         const div = document.createElement('div');
                         div.className = `msg-bubble ${m.sender === 'member' ? 'msg-member' : 'msg-admin'}`;
@@ -191,7 +244,6 @@
                         display.appendChild(div);
                     });
                     display.scrollTop = display.scrollHeight;
-
                     if(!snap.empty && snap.docChanges().some(change => change.type === "added" && change.doc.data().sender === 'admin')) {
                         document.getElementById('msgSound').play().catch(()=>{});
                     }
@@ -229,4 +281,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
