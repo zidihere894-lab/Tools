@@ -10,16 +10,28 @@
     
     <style>
         :root { --bg-color: #d1d9e6; --text-color: #31344b; --shadow-light: #ffffff; --shadow-dark: #b8b9be; --accent: #6c5ce7; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        .dark-mode { --bg-color: #1a1b26; --text-color: #cfcfff; --shadow-light: #24283b; --shadow-dark: #10101a; --accent: #7aa2f7; }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s, color 0.3s; }
         body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; overflow-x: hidden; }
 
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        /* Top Bar Stats */
+        .top-stats { display: flex; justify-content: space-around; padding: 10px; background: var(--bg-color); box-shadow: 0 4px 10px var(--shadow-dark); font-size: 0.75rem; font-weight: bold; position: sticky; top: 0; z-index: 9000; }
+        .stat-item i { color: var(--accent); margin-right: 5px; }
+
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; }
         #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
         
-        header { padding: 40px 20px 10px; text-align: center; }
+        header { padding: 30px 20px 10px; text-align: center; }
         .logo { font-family: 'Audiowide'; font-size: 2.2rem; color: var(--text-color); letter-spacing: 2px; }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        
+        /* Action Buttons Area */
+        .action-area { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 25px; }
+        .btn-action { padding: 10px 20px; border-radius: 50px; border: none; background: var(--bg-color); color: var(--text-color); font-size: 0.85rem; font-weight: 600; box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .btn-action:active { box-shadow: inset 3px 3px 6px var(--shadow-dark); }
+
         .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .tool-card { background: var(--bg-color); border-radius: 20px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light); cursor: pointer; }
         .tool-card img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; }
@@ -28,36 +40,43 @@
         .chat-widget-container { position: fixed; bottom: 20px; left: 20px; z-index: 10001; }
         #chatBox { display: none; width: 300px; height: 400px; background: var(--bg-color); border-radius: 20px; box-shadow: 10px 10px 20px var(--shadow-dark); flex-direction: column; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--shadow-dark); }
         .chat-header { background: #31344b; color: white; padding: 12px; text-align: center; font-size: 0.9rem; }
-        #member-msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.3); }
+        #member-msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.1); }
         .msg-bubble { padding: 8px 12px; border-radius: 15px; font-size: 0.8rem; max-width: 80%; word-wrap: break-word; }
-        .msg-member { background: #31344b; color: white; align-self: flex-end; }
-        .msg-admin { background: white; color: #333; align-self: flex-start; box-shadow: 2px 2px 5px #bbb; }
+        .msg-member { background: var(--accent); color: white; align-self: flex-end; }
+        .msg-admin { background: #fff; color: #333; align-self: flex-start; box-shadow: 2px 2px 5px #bbb; }
         
         .chat-input-row { padding: 10px; display: flex; gap: 5px; background: var(--bg-color); }
-        #mMsg { flex: 1; padding: 8px; border-radius: 10px; border: none; box-shadow: inset 2px 2px 5px var(--shadow-dark); outline: none; }
+        #mMsg { flex: 1; padding: 8px; border-radius: 10px; border: none; box-shadow: inset 2px 2px 5px var(--shadow-dark); outline: none; background: var(--bg-color); color: var(--text-color); }
         .chat-toggle-btn { width: 55px; height: 55px; border-radius: 50%; border: none; background: #31344b; color: white; font-size: 22px; cursor: pointer; box-shadow: 5px 5px 15px rgba(0,0,0,0.2); }
 
-        .google-btn { background: white; padding: 12px 20px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; box-shadow: 5px 5px 10px var(--shadow-dark); display: flex; align-items: center; gap: 10px; }
+        .google-btn { background: white; padding: 12px 20px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; box-shadow: 5px 5px 10px var(--shadow-dark); display: flex; align-items: center; gap: 10px; color: #333; }
+        .whatsapp-login { color: var(--text-color); font-size: 0.8rem; text-decoration: none; font-weight: bold; }
 
-        /* REMOTE POPUP STYLE */
+        /* POPUP & OVERLAYS */
         .ziddi-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 30000; display: none; justify-content: center; align-items: center; padding: 20px; }
         .popup-content { background: var(--bg-color); padding: 30px; border-radius: 25px; box-shadow: 10px 10px 20px #000; text-align: center; max-width: 400px; width: 100%; }
         .popup-btn { margin-top: 20px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; width: 100%; }
 
-        /* FLOATING BUTTON */
+        #site-lock { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-color); z-index:40000; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; }
         #remote-float-btn { position: fixed; z-index: 9998; padding: 12px 25px; border-radius: 50px; color: white; text-decoration: none; font-weight: bold; font-size: 0.9rem; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); display: none; align-items: center; gap: 8px; }
     </style>
 </head>
-<body>
+<body class="">
+
+    <div class="top-stats">
+        <div class="stat-item"><i class="fas fa-circle" style="font-size:8px; color:#2ecc71;"></i> Online: <span id="online-count">1</span></div>
+        <div class="stat-item"><i class="fas fa-eye"></i> Views: <span id="view-count">Loading...</span></div>
+        <div class="stat-item" onclick="toggleTheme()" style="cursor:pointer;"><i class="fas fa-moon"></i> Dark Mode</div>
+    </div>
 
     <audio id="msgSound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
 
-    <div id="site-lock" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-color); z-index:40000; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px;">
+    <div id="site-lock">
         <i class="fas fa-lock fa-3x" style="color:var(--accent); margin-bottom:20px;"></i>
         <h2>Site Locked</h2>
         <p>Enter password to access tools</p>
-        <input type="text" id="pass-input" placeholder="Enter Password" style="max-width:300px; margin:20px 0; padding:12px; border-radius:10px; border:none; box-shadow:inset 4px 4px 8px var(--shadow-dark);">
-        <button class="google-btn" onclick="checkSitePass()" style="background:var(--accent); color:white;">UNLOCK NOW</button>
+        <input type="text" id="pass-input" placeholder="Enter Password" style="max-width:300px; margin:20px 0; padding:12px; border-radius:10px; border:none; box-shadow:inset 4px 4px 8px var(--shadow-dark); background:var(--bg-color); color:var(--text-color);">
+        <button class="google-btn" onclick="checkSitePass()" style="background:var(--accent); color:white; justify-content:center; width:200px;">UNLOCK NOW</button>
     </div>
 
     <div id="wa-popup" class="ziddi-popup" style="display: flex;">
@@ -73,7 +92,7 @@
     <div id="admin-popup" class="ziddi-popup">
         <div class="popup-content">
             <i class="fas fa-bullhorn fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
-            <h3 id="pop-title">Notification</h3>
+            <h3>Notification</h3>
             <p id="pop-msg-text"></p>
             <button class="popup-btn" id="pop-close-btn" onclick="document.getElementById('admin-popup').style.display='none'">OK</button>
         </div>
@@ -84,8 +103,9 @@
     <div id="login-overlay">
         <h1 class="logo">ZIDDI HACKS</h1>
         <button class="google-btn" onclick="googleLogin()">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20"> Login with Google
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20"> Continue with Google
         </button>
+        <a href="https://wa.me/923402439417" class="whatsapp-login"><i class="fab fa-whatsapp"></i> Contact on WhatsApp: +923402439417</a>
     </div>
 
     <canvas id="snow-canvas"></canvas>
@@ -99,7 +119,7 @@
             <div id="member-msgs"></div>
             <div class="chat-input-row">
                 <input type="text" id="mMsg" placeholder="Type message..." onkeypress="if(event.key==='Enter') sendMemberMsg()">
-                <button onclick="sendMemberMsg()" style="border:none; background:none; color:#31344b; font-size:1.2rem; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+                <button onclick="sendMemberMsg()" style="border:none; background:none; color:var(--accent); font-size:1.2rem; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
         <button class="chat-toggle-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></button>
@@ -111,6 +131,15 @@
     </header>
 
     <div class="container">
+        <div class="action-area">
+            <a href="https://ziddi-toolkit-maker.vercel.app" class="btn-action" target="_blank">
+                <i class="fas fa-magic"></i> Create Your Toolkit
+            </a>
+            <button onclick="toggleTheme()" class="btn-action">
+                <i class="fas fa-adjust"></i> Toggle Dark Theme
+            </button>
+        </div>
+
         <div id="tools-display" class="tools-grid"></div>
     </div>
 
@@ -134,24 +163,35 @@
         let numericUID = null;
         let correctPass = "";
 
-        // --- REMOTE CONFIG LISTENER ---
+        // Dark Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // --- VIEWS & ONLINE MOCKUP ---
+        function updateStats() {
+            document.getElementById('online-count').innerText = Math.floor(Math.random() * 20) + 5;
+            let views = localStorage.getItem('site_views') || 1050;
+            views = parseInt(views) + 1;
+            localStorage.setItem('site_views', views);
+            document.getElementById('view-count').innerText = views;
+        }
+        updateStats();
+
+        // --- REMOTE CONFIG ---
         db.collection("site_settings").onSnapshot(snap => {
             snap.forEach(doc => {
                 const data = doc.data();
-                if(doc.id === 'security') {
-                    if(data.passEnabled === 'on') {
-                        correctPass = data.password;
-                        document.getElementById('site-lock').style.display = 'flex';
-                    } else {
-                        document.getElementById('site-lock').style.display = 'none';
-                    }
+                if(doc.id === 'security' && data.passEnabled === 'on') {
+                    correctPass = data.password;
+                    document.getElementById('site-lock').style.display = 'flex';
+                } else if(doc.id === 'security') {
+                    document.getElementById('site-lock').style.display = 'none';
                 }
-                if(doc.id === 'popup') {
-                    if(data.popStatus === 'show') {
-                        document.getElementById('pop-msg-text').innerText = data.popMsg;
-                        document.getElementById('pop-close-btn').innerText = data.popBtn || "OK";
-                        document.getElementById('admin-popup').style.display = 'flex';
-                    }
+                if(doc.id === 'popup' && data.popStatus === 'show') {
+                    document.getElementById('pop-msg-text').innerText = data.popMsg;
+                    document.getElementById('pop-close-btn').innerText = data.popBtn || "OK";
+                    document.getElementById('admin-popup').style.display = 'flex';
                 }
                 if(doc.id === 'button') {
                     const fBtn = document.getElementById('remote-float-btn');
@@ -166,10 +206,8 @@
         });
 
         function checkSitePass() {
-            const input = document.getElementById('pass-input').value;
-            if(input === correctPass) {
-                document.getElementById('site-lock').style.display = 'none';
-            } else { alert("Wrong Password!"); }
+            if(document.getElementById('pass-input').value === correctPass) document.getElementById('site-lock').style.display = 'none';
+            else alert("Wrong Password!");
         }
 
         function googleLogin() {
@@ -180,31 +218,19 @@
             if (user) {
                 currentUser = user;
                 await getNumericUID(user.uid);
-                
-                // BLOCK CHECK
                 const userDoc = await db.collection('users').doc(user.uid).get();
-                if(userDoc.exists && userDoc.data().isBlocked) {
-                    alert("Your ID is Blocked!");
-                    auth.signOut();
-                    return;
-                }
-
+                if(userDoc.exists && userDoc.data().isBlocked) { alert("Blocked!"); auth.signOut(); return; }
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('user-uid-display').innerText = "ID: " + numericUID;
-                loadTools();
-                loadChat();
-                initSnow();
-            } else {
-                document.getElementById('login-overlay').style.display = 'flex';
-            }
+                loadTools(); loadChat(); initSnow();
+            } else { document.getElementById('login-overlay').style.display = 'flex'; }
         });
 
         async function getNumericUID(fbUid) {
             const userRef = db.collection('users').doc(fbUid);
             const doc = await userRef.get();
-            if (doc.exists) {
-                numericUID = doc.data().shortId;
-            } else {
+            if (doc.exists) numericUID = doc.data().shortId;
+            else {
                 numericUID = Math.floor(10000000 + Math.random() * 90000000).toString();
                 await userRef.set({ shortId: numericUID, email: currentUser.email, isBlocked: false });
             }
@@ -218,36 +244,26 @@
         function sendMemberMsg() {
             const input = document.getElementById('mMsg');
             if(!input.value.trim()) return;
-            db.collection('chats').add({
-                text: input.value,
-                sender: 'member',
-                uid: numericUID,
-                userName: currentUser.displayName,
-                time: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            db.collection('chats').add({ text: input.value, sender: 'member', uid: numericUID, userName: currentUser.displayName, time: firebase.firestore.FieldValue.serverTimestamp() });
             input.value = '';
         }
 
         function loadChat() {
-            db.collection('chats')
-                .where('uid', '==', numericUID)
-                .onSnapshot(snap => {
-                    const display = document.getElementById('member-msgs');
-                    display.innerHTML = '';
-                    let msgs = [];
-                    snap.forEach(doc => msgs.push(doc.data()));
-                    msgs.sort((a, b) => (a.time?.seconds || 0) - (b.time?.seconds || 0));
-                    msgs.forEach(m => {
-                        const div = document.createElement('div');
-                        div.className = `msg-bubble ${m.sender === 'member' ? 'msg-member' : 'msg-admin'}`;
-                        div.innerText = m.text;
-                        display.appendChild(div);
-                    });
-                    display.scrollTop = display.scrollHeight;
-                    if(!snap.empty && snap.docChanges().some(change => change.type === "added" && change.doc.data().sender === 'admin')) {
-                        document.getElementById('msgSound').play().catch(()=>{});
-                    }
+            db.collection('chats').where('uid', '==', numericUID).onSnapshot(snap => {
+                const display = document.getElementById('member-msgs');
+                display.innerHTML = '';
+                let msgs = [];
+                snap.forEach(doc => msgs.push(doc.data()));
+                msgs.sort((a, b) => (a.time?.seconds || 0) - (b.time?.seconds || 0));
+                msgs.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = `msg-bubble ${m.sender === 'member' ? 'msg-member' : 'msg-admin'}`;
+                    div.innerText = m.text;
+                    display.appendChild(div);
                 });
+                display.scrollTop = display.scrollHeight;
+                if(!snap.empty && snap.docChanges().some(change => change.type === "added" && change.doc.data().sender === 'admin')) document.getElementById('msgSound').play().catch(()=>{});
+            });
         }
 
         function loadTools() {
@@ -256,11 +272,7 @@
                 grid.innerHTML = '';
                 snap.forEach(doc => {
                     const t = doc.data();
-                    grid.innerHTML += `
-                        <div class="tool-card" onclick="window.open('${t.url}', '_blank')">
-                            <img src="${t.icon}">
-                            <b>${t.name}</b>
-                        </div>`;
+                    grid.innerHTML += `<div class="tool-card" onclick="window.open('${t.url}', '_blank')"><img src="${t.icon}"><b>${t.name}</b></div>`;
                 });
             });
         }
@@ -281,4 +293,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
